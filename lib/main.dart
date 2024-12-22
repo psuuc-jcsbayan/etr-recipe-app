@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'screens/recipe_dashboard.dart';
+import 'screens/homescreen/recipe_dashboard.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,5 +17,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
