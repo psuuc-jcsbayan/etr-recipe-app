@@ -31,8 +31,9 @@ class _RecipeAppState extends State<RecipeApp> {
     final recipes = await DBHelper().fetchRecipes();
     setState(() {
       _personalRecipes = recipes;
-      _favoriteRecipes =
-          recipes.where((recipe) => recipe.isFavorite).toList(); // Filter favorites
+      _favoriteRecipes = recipes
+          .where((recipe) => recipe.isFavorite)
+          .toList(); // Filter favorites
     });
   }
 
@@ -152,7 +153,7 @@ class _RecipeAppState extends State<RecipeApp> {
                     scrollDirection: Axis.horizontal,
                     children: List.generate(
                       6,
-                      (index) => CategoryItem(),
+                      (index) => const CategoryItem(),
                     ),
                   ),
                 ),
@@ -236,7 +237,8 @@ class _RecipeAppState extends State<RecipeApp> {
           ),
 
           // Favorites Screen
-          FavoritesScreen(favoriteRecipes: _favoriteRecipes), // Pass favorite list
+          FavoritesScreen(
+              favoriteRecipes: _favoriteRecipes), // Pass favorite list
 
           // Profile Screen
           _screens[0],

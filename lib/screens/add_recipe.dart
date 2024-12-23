@@ -2,10 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/recipe.dart';
-import '../components/db_helper.dart';
 
 class RecipeFormPage extends StatefulWidget {
-  const RecipeFormPage({super.key, required Future<void> Function(Recipe recipe) onSave});
+  final Future<void> Function(Recipe recipe) onSave;
+
+  const RecipeFormPage({super.key, required this.onSave});
 
   @override
   _RecipeFormPageState createState() => _RecipeFormPageState();
@@ -32,8 +33,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
     }
   }
 
-  // Function to validate and save the form
-  void _validateAndSaveForm() {
+  // Function to validate and save the recipe
+  void _validateAndSaveForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
@@ -46,15 +47,35 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
         imagePath: _selectedImage,
       );
 
-      // Save to the database
-      DBHelper().insertRecipe(newRecipe).then((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Recipe saved successfully!')),
-        );
+      bool saveConfirmed = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Save Recipe'),
+            content: const Text('Do you want to save this recipe?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false); // Cancel save
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true); // Confirm save
+                },
+                child: const Text('Save'),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (saveConfirmed == true) {
+        await widget.onSave(newRecipe); // Use the onSave callback
         Navigator.pop(context); // Close the form page
-      });
+      }
     } else {
-      // Alert user about incomplete fields
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill out all the fields.')),
       );
@@ -65,7 +86,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recipe Form'),
+        title: const Text('Add Recipe'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -135,7 +156,6 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                 },
                 validator: (value) =>
                     value == null || value.isEmpty ? 'Select a category' : null,
-                value: _category,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -154,7 +174,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
               const SizedBox(height: 16),
               TextFormField(
                 decoration: const InputDecoration(
-                  labelText: 'Step by Step',
+                  labelText: 'Steps',
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 5,
