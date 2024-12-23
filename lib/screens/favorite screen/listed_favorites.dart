@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../models/recipe.dart';
+import '../personal recipes/recipe_detail_screen.dart';
 
 class FavoritesScreen extends StatefulWidget {
   final List<Recipe> favoriteRecipes; // Receive the favorite recipes list
@@ -21,7 +22,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     "Lunch",
     "Dinner",
     "Snacks",
-    "Appetizers",
+    "Appetizer",
   ];
 
   @override
@@ -92,6 +93,16 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                             _removeFromFavorites(recipe);
                           },
                         ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RecipeDetailsScreen(
+                                recipe: recipe,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     );
                   },

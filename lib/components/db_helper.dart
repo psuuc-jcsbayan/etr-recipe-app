@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import '../models/recipe.dart'; // Adjust the path to your Recipe model
+import '../models/recipe.dart';
 
 class DBHelper {
   static final DBHelper _instance = DBHelper._internal();
@@ -26,7 +26,7 @@ class DBHelper {
         CREATE TABLE recipes(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           title TEXT,
-          timeDuration TEXT,
+          timeDuration INTEGER,
           category TEXT,
           ingredients TEXT,
           steps TEXT,
@@ -39,10 +39,13 @@ class DBHelper {
     );
   }
 
-  Future<List<Recipe>> getFavoriteRecipes() async {
+  Future<List<Recipe>> fetchRecipesByCategory(String category) async {
     final db = await database;
-    final maps =
-        await db.query('recipes', where: 'isFavorite = ?', whereArgs: [1]);
+    final List<Map<String, dynamic>> maps = await db.query(
+      'recipes',
+      where: 'category = ?',
+      whereArgs: [category],
+    );
     return List.generate(maps.length, (i) => Recipe.fromMap(maps[i]));
   }
 
